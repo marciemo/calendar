@@ -5,6 +5,8 @@ require 'factory_girl'
 require 'pg'
 require './spec/factories'
 require 'event'
+require 'task'
+
 
 ActiveRecord::Base.establish_connection(YAML::load(File.open('./db/config.yml'))["test"])
 
