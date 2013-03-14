@@ -46,7 +46,10 @@ def add
 end
 
 def delete
-
+  list
+  puts "Enter the name of the event you want to delete: "
+  event_name = gets.chomp
+  Event.where(:name => event_name).pop.destroy
 end
 
 def edit
