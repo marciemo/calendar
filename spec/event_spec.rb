@@ -15,6 +15,20 @@ describe Event do
 
   end
 
-  
+  context 'date_scopes' do
+    it 'returns all start dates that are after the beginning date' do
+      events_after_date = ['20030101', '20040202', '20050204'].map {|date| FactoryGirl.create(:event, :start_date => date)}
+      events_before_date = ['10020101', '10030202', '10060204'].map {|date| FactoryGirl.create(:event, :start_date => date)}
+      Event.after_date("20010404").should match_array events_after_date
+    end
+
+    it 'returns all start dates that are before the beginning date' do
+      events_after_date = ['20020101', '20030202', '20060204'].map {|date| FactoryGirl.create(:event, :start_date => date)}
+      events_before_date = ['10020101', '10030202', '10060204'].map {|date| FactoryGirl.create(:event, :start_date => date)}
+      Event.before_date("20010404").should match_array events_before_date
+    end
+  end
+
+
 
 end
