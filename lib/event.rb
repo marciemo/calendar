@@ -6,8 +6,9 @@ class Event < ActiveRecord::Base
 
   has_many :notes, :as => :notable
 
+  default_scope(:order => :start_date)
+
   scope :after_date, lambda { |time| where("start_date >= ?", time)}
   scope :before_date, lambda { |time| where("start_date <= ?", time)}
-
-
+  
 end

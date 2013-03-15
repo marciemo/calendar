@@ -18,7 +18,7 @@ describe Event do
     it {should have_many(:notes)}
   end
 
-  context 'date_scopes' do
+  context 'scopes' do
     it 'returns all start dates that are after the beginning date' do
       events_after_date = ['20030101', '20040202', '20050204'].map {|date| FactoryGirl.create(:event, :start_date => date)}
       events_before_date = ['10020101', '10030202', '10060204'].map {|date| FactoryGirl.create(:event, :start_date => date)}
@@ -29,6 +29,11 @@ describe Event do
       events_after_date = ['20020101', '20030202', '20060204'].map {|date| FactoryGirl.create(:event, :start_date => date)}
       events_before_date = ['10020101', '10030202', '10060204'].map {|date| FactoryGirl.create(:event, :start_date => date)}
       Event.before_date("20010404").should match_array events_before_date
+    end
+
+    it 'by default sorts events by start_date' do
+      event_dates = ['20130101 13:00', '20130202', '20130204', '20130102', '20130101 06:00'].map {|date| FactoryGirl.create(:event, :start_date => date)}
+      Event.all.should eq event_dates.sort_by { |event| event.start_date }
     end
   end
 
