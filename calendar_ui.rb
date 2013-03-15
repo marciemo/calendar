@@ -33,13 +33,15 @@ end
 def calendar_menu
   choice = nil
   until choice == 'x'
-    puts "Enter one of the following options:"
-    puts "'a' to add an event, 'd' to delete an event, 'v' to view my schedule by date range, 'l' to list your events."
+    puts "Enter one of the following event options:"
+    puts "'a' to add, 'e' to edit, 'd' to delete, 'v' to view schedule by date range, 'l' to list all events."
     puts "Type 'x' to exit."
     choice = gets.chomp
     case choice
     when 'a'
       add_event
+    when 'e'
+      edit_event
     when 'd'
       delete_event
     when 'v'
@@ -54,13 +56,15 @@ end
 def task_menu
   choice = nil
   until choice == 'x'
-    puts "Enter one of the following options:"
-    puts "'a' to add a task, 'd' to delete a task, 'c' to mark task as complete, 'l' to list all tasks."
+    puts "Enter one of the following task options:"
+    puts "'a' to add, 'e' to edit, 'd' to delete, 'c' to mark as complete, 'l' to list all tasks."
     puts "Type 'x' to exit."
     choice = gets.chomp
     case choice
     when 'a'
       add_task
+    when 'e'
+      edit_task
     when 'd'
       delete_task
     when 'c'
@@ -102,9 +106,51 @@ def add_event
   end
 end
 
+def edit_event
+  list_events(Event.all)
+  puts "Enter the name of the event you want to edit."
+  event_name = gets.chomp
+  event = Event.where(:name => event_name).pop
+  puts "#{event.name}\t#{event.location}\t#{event.start_date}\t#{event.end_date}\t#{event.notes.map {|note| note.entry}.join(', ')}"
+  choice = nil
+  until choice == 'x'
+    puts "Enter one of the following event edit functions:"
+    puts "'1' to edit name, '2' to edit location, '3' to edit start date, '4' to edit end date, '5' to add another note, 'x' to exit"
+    choice = gets.chomp
+    case choice
+    when '1'
+      puts "Enter a new name: "
+      name = gets.chomp
+      Event.where(:name => event_name).pop.update_attributes(:name => name)
+      list_events(Event.all)      
+    when '2'
+      puts "Enter a new location: "
+      location = gets.chomp
+      Event.where(:name => event_name).pop.update_attributes(:location => location)
+      list_events(Event.all)
+    when '3'
+      puts "Enter a new start_date: "
+      start_date = gets.chomp
+      Event.where(:name => event_name).pop.update_attributes(:start_date => start_date)
+      list_events(Event.all)
+    when '4'
+      puts "Enter a new end_date: "
+      end_date = gets.chomp
+      Event.where(:name => event_name).pop.update_attributes(:end_date => end_date)
+      list_events(Event.all)
+    when '5'
+      puts "Enter a new note\n\n"
+      new_note = gets.chomp
+      note = event.notes.create(:entry => new_note)
+      list_events(Event.all)      
+    else
+    end
+  end
+end
+
 def list_events(events)
   puts "Here are all your events:"
-  events.each {|event| puts "#{event.name}\t|\t#{event.location}\t|\t#{event.start_date}\t|\t#{event.end_date}\t|\t#{event.notes.map {|note| note.entry}.join(', ')}\n\n"}
+  events.each {|event| puts "#{event.name}\t#{event.location}\t#{event.start_date}\t#{event.end_date}\t#{event.notes.map {|note| note.entry}.join(', ')}\n\n"}
 end
 
 def delete_event
@@ -143,8 +189,36 @@ def add_task
   end
 end
 
+def edit_task
+  list_tasks(Task.all)
+  puts "Enter the name of the task you want to edit."
+  task_name = gets.chomp
+  task_to_edit = Task.where(:name => task_name).pop
+  puts "#{task_to_edit.name}\t#{task_to_edit.notes.map { |note| note.entry }.join(', ')}"
+  choice = nil
+  until choice == 'x'
+    puts "Enter one of the following task edit functions:"
+    puts "'1' to edit name, '2' to add another note, 'x' to exit"
+    choice = gets.chomp
+    case choice
+    when '1'
+      puts "Enter a new name: "
+      name = gets.chomp
+      Task.where(:name => task_name).pop.update_attributes(:name => name)
+      puts "Here is your updated tasks: "
+      list_tasks(Task.all)
+    when '2'
+      puts "Enter a new note\n\n"
+      new_note = gets.chomp
+      note = task_to_edit.notes.create(:entry => new_note)
+      list_tasks(Task.all)      
+    else
+    end
+  end
+end
+
 def list_tasks(tasks)
-  tasks.each {|task| puts "#{task.name}\t|\t#{task.notes.map { |note| note.entry }.join(', ')}"}
+  tasks.each {|task| puts "#{task.name}\t#{task.notes.map { |note| note.entry }.join(', ')}"}
 end
 
 def delete_task
