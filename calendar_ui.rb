@@ -84,14 +84,15 @@ def add_event
  
   event = Event.create(:name => event_name, :location => event_location, :start_date => start_time, :end_date => end_time)
   puts "'#{event.name}' on '#{event.start_date}' to '#{event.end_date}' has been added to your Scheduler."
-  # puts "Would you like to add a note to this task? (y/n)"
-  # answer = gets.chomp
-  # if answer == 'y'
-  #   puts "Please enter your note here: \n\n"
-  #   entry = gets.chomp
-  #   note = Note.create(:entry => entry)
-  # else
-  # end
+  puts "Would you like to add a note to this task? (y/n)"
+  answer = gets.chomp
+  if answer == 'y'
+    puts "Please enter your note here: \n\n"
+    entry = gets.chomp
+    note = event.notes.create(:entry => entry)
+    puts "Note added"
+  else
+  end
 end
 
 def list_events(events)
