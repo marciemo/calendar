@@ -3,10 +3,18 @@ require 'spec_helper'
 describe Task do
   context 'validations' do
     it {should validate_presence_of :name}
+    it { should ensure_length_of(:name).is_at_least(2).is_at_most(25) }
   end
 
   context 'associations' do
     it {should have_many(:notes)}
+  end
+
+  context 'callbacks' do 
+    it 'capitalizes the first letter of name' do 
+      task = FactoryGirl.create(:task, :name => "not clean the house")
+      task.name.should eq "Not clean the house"
+    end
   end
 
   context 'done_scopes' do

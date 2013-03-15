@@ -3,7 +3,9 @@ require 'spec_helper'
 describe Event do
   context 'validations' do
     it {should validate_presence_of :name}
+    it { should ensure_length_of(:name).is_at_least(2).is_at_most(25) }
     it {should validate_presence_of :location}
+    it { should ensure_length_of(:name).is_at_least(2).is_at_most(25) }
     it {should validate_presence_of :start_date}
     it {should validate_presence_of :end_date}
 
@@ -16,6 +18,17 @@ describe Event do
 
   context 'associations' do
     it {should have_many(:notes)}
+  end
+
+  context 'callbacks' do 
+    it 'capitalizes the first letter of name' do 
+      event = FactoryGirl.create(:event, :name => "party")
+      event.name.should eq "Party"
+    end
+    it 'capitalizes the first letter of location' do 
+      event = FactoryGirl.create(:event, :location => "here")
+      event.location.should eq "Here"
+    end
   end
 
   context 'scopes' do
