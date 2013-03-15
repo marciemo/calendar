@@ -1,6 +1,8 @@
 require 'active_record'
 require './lib/event'
 require './lib/task'
+require './lib/note'
+
 
 database_configurations = YAML::load(File.open('./db/config.yml'))
 development_configuation = database_configurations["development"]
@@ -53,7 +55,7 @@ def task_menu
   choice = nil
   until choice == 'x'
     puts "Enter one of the following options:"
-    puts "'a' to add a task, 'd' to delete a task,'l' to list all tasks."
+    puts "'a' to add a task, 'd' to delete a task, 'c' to mark task as complete, 'l' to list all tasks."
     puts "Type 'x' to exit."
     choice = gets.chomp
     case choice
@@ -61,6 +63,8 @@ def task_menu
       add_task
     when 'd'
       delete_task
+    when 'c'
+      complete_task
     when 'l'
       list_tasks(Task.all)
     else
@@ -77,8 +81,17 @@ def add_event
   start_time = gets.chomp
   puts "Enter an end date and time for your event (Month day, year time): "
   end_time = gets.chomp
-  event = Event.create!(:name => event_name, :location => event_location, :start_date => start_time, :end_date => end_time)
+ 
+  event = Event.create(:name => event_name, :location => event_location, :start_date => start_time, :end_date => end_time)
   puts "'#{event.name}' on '#{event.start_date}' to '#{event.end_date}' has been added to your Scheduler."
+  # puts "Would you like to add a note to this task? (y/n)"
+  # answer = gets.chomp
+  # if answer == 'y'
+  #   puts "Please enter your note here: \n\n"
+  #   entry = gets.chomp
+  #   note = Note.create(:entry => entry)
+  # else
+  # end
 end
 
 def list_events(events)
@@ -121,14 +134,13 @@ def delete_task
   Task.where(:name => task_name).pop.destroy
 end
 
-def view_tasks
-  puts "Enter a start date (Month day, year): "
-  start_time = Date.parse(gets.chomp)
-  puts "Enter an end date (Month day, year): "
-  end_time = Date.parse(gets.chomp)
-  tasks = Task.after_date(start_time).before_date(end_time)
-  tasks.each { |task| puts "#{task.name}\n\n" }
+def complete_tasks
+  list_tasks(Task.all)
+  puts "Enter the name of the task you wish to mark as complete: "
+  task_name = gets.chomp
+  Task.where(:name => task_name).pop
 end
+
 
 
 welcome
