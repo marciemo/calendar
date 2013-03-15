@@ -84,7 +84,7 @@ def add_event
  
   event = Event.create(:name => event_name, :location => event_location, :start_date => start_time, :end_date => end_time)
   puts "'#{event.name}' on '#{event.start_date}' to '#{event.end_date}' has been added to your Scheduler."
-  puts "Would you like to add a note to this task? (y/n)"
+  puts "Would you like to add a note to this event? (y/n)"
   answer = gets.chomp
   if answer == 'y'
     puts "Please enter your note here: \n\n"
@@ -97,7 +97,7 @@ end
 
 def list_events(events)
   puts "Here are all your events:"
-  events.each {|event| puts "#{event.name}\t|\t#{event.location}\t|\t#{event.start_date}\t|\t#{event.end_date}\n\n"}
+  events.each {|event| puts "#{event.name}\t|\t#{event.location}\t|\t#{event.start_date}\t|\t#{event.end_date}\t|\t#{event.notes.map {|note| note.entry}.join(', ')}\n\n"}
 end
 
 def delete_event
@@ -121,11 +121,20 @@ def add_task
   task_name = gets.chomp
   task = Task.create(:name => task_name)
   puts "'#{task.name}' has been added to your Scheduler."
+  puts "Would you like to add a note to this task? (y/n)"
+  answer = gets.chomp
+  if answer == 'y'
+    puts "Please enter your note here: \n\n"
+    entry = gets.chomp
+    note = task.notes.create(:entry => entry)
+    puts "Note added"
+  else
+  end
 end
 
 def list_tasks(tasks)
   puts "Here are all your tasks:"
-  tasks.each {|task| puts "#{task.name}"}
+  tasks.each {|task| puts "#{task.name} \t|\t#{task.notes.map { |note| note.entry }.join(', ')}"}
 end
 
 def delete_task
