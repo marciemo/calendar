@@ -66,7 +66,10 @@ def task_menu
     when 'c'
       complete_task
     when 'l'
-      list_tasks(Task.all)
+      puts "Here are your completed tasks:"      
+      list_tasks(Task.complete)
+      puts "Here are your incomplete tasks:"
+      list_tasks(Task.incomplete)
     else
     end
   end
@@ -84,14 +87,18 @@ def add_event
  
   event = Event.create(:name => event_name, :location => event_location, :start_date => start_time, :end_date => end_time)
   puts "'#{event.name}' on '#{event.start_date}' to '#{event.end_date}' has been added to your Scheduler."
-  puts "Would you like to add a note to this event? (y/n)"
-  answer = gets.chomp
-  if answer == 'y'
-    puts "Please enter your note here: \n\n"
-    entry = gets.chomp
-    note = event.notes.create(:entry => entry)
-    puts "Note added"
-  else
+  answer = nil
+  until answer == 'n'
+    puts "Would you like to add a note? (y/n)"
+    answer = gets.chomp
+    case answer
+    when 'y'
+      puts "Please enter your note here: \n\n"
+      entry = gets.chomp
+      note = event.notes.create(:entry => entry)
+      puts "Note added."
+    else
+    end
   end
 end
 
@@ -121,20 +128,23 @@ def add_task
   task_name = gets.chomp
   task = Task.create(:name => task_name)
   puts "'#{task.name}' has been added to your Scheduler."
-  puts "Would you like to add a note to this task? (y/n)"
-  answer = gets.chomp
-  if answer == 'y'
-    puts "Please enter your note here: \n\n"
-    entry = gets.chomp
-    note = task.notes.create(:entry => entry)
-    puts "Note added"
-  else
+  answer = nil
+  until answer == 'n'
+    puts "Would you like to add a note? (y/n)"
+    answer = gets.chomp
+    case answer
+    when 'y'
+      puts "Please enter your note here: \n\n"
+      entry = gets.chomp
+      note = task.notes.create(:entry => entry)
+      puts "Note added."
+    else
+    end
   end
 end
 
 def list_tasks(tasks)
-  puts "Here are all your tasks:"
-  tasks.each {|task| puts "#{task.name} \t|\t#{task.notes.map { |note| note.entry }.join(', ')}"}
+  tasks.each {|task| puts "#{task.name}\t|\t#{task.notes.map { |note| note.entry }.join(', ')}"}
 end
 
 def delete_task
@@ -144,11 +154,11 @@ def delete_task
   Task.where(:name => task_name).pop.destroy
 end
 
-def complete_tasks
+def complete_task
   list_tasks(Task.all)
   puts "Enter the name of the task you wish to mark as complete: "
   task_name = gets.chomp
-  Task.where(:name => task_name).pop
+  Task.where(:name => task_name).pop.update_attributes(:done => true)
 end
 
 
