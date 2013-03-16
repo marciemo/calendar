@@ -3,13 +3,12 @@ require './lib/event'
 require './lib/task'
 require './lib/note'
 
-
 database_configurations = YAML::load(File.open('./db/config.yml'))
 development_configuation = database_configurations["development"]
 ActiveRecord::Base.establish_connection(development_configuation)
 
 def welcome
-  puts "Welcome to Simple Scheduler"
+  puts "\n\nWelcome to Simple Scheduler\n\n"
   menu
 end
 
@@ -33,7 +32,7 @@ end
 def calendar_menu
   choice = nil
   until choice == 'x'
-    puts "Enter one of the following event options:"
+    puts "\n\nEnter one of the following event options:"
     puts "'a' to add, 'e' to edit, 'd' to delete, 'v' to view schedule by date range, 'l' to list all events."
     puts "Type 'x' to exit."
     choice = gets.chomp
@@ -70,9 +69,9 @@ def task_menu
     when 'c'
       complete_task
     when 'l'
-      puts "Here are your completed tasks:"      
+      puts "Here are your completed tasks:\n"      
       list_tasks(Task.complete)
-      puts "Here are your incomplete tasks:"
+      puts "Here are your incomplete tasks:\n"
       list_tasks(Task.incomplete)
     else
     end
@@ -80,24 +79,30 @@ def task_menu
 end 
 
 def add_event
-  puts "Enter a name of your event: "
+  puts "Enter a name for your event:"
   event_name = gets.chomp
-  puts "Enter a location for your event: "
+  puts "Enter a location for your event:"
   event_location = gets.chomp
-  puts "Enter a start date and time for your event (Month day, year time): "
+  puts "Enter a start date and time for your event (Month day, year time):"
   start_time = gets.chomp
-  puts "Enter an end date and time for your event (Month day, year time): "
+  puts "Enter an end date and time for your event (Month day, year time):"
   end_time = gets.chomp
- 
   event = Event.create(:name => event_name, :location => event_location, :start_date => start_time, :end_date => end_time)
-  puts "'#{event.name}' on '#{event.start_date}' to '#{event.end_date}' has been added to your Scheduler."
+  if event.save
+    puts "'#{event.name}' on '#{event.start_date}' to '#{event.end_date}' has been added to your Scheduler."
+  else
+    puts "End date invalid."
+    event.errors.full_messages.each {|message| puts message}
+    puts "Start over, moron-idiot!"
+    add_event
+  end
   answer = nil
   until answer == 'n'
     puts "Would you like to add a note? (y/n)"
     answer = gets.chomp
     case answer
     when 'y'
-      puts "Please enter your note here: \n\n"
+      puts "Please enter your note here:\n"
       entry = gets.chomp
       note = event.notes.create(:entry => entry)
       puts "Note added."
@@ -234,7 +239,5 @@ def complete_task
   task_name = gets.chomp
   Task.where(:name => task_name).pop.update_attributes(:done => true)
 end
-
-
 
 welcome
